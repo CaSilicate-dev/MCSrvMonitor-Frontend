@@ -31,6 +31,7 @@ export default function App() {
       const res = await fetch(`${API_BASE}/list`)
       const j = await res.json();
       const d = j.namelist;
+      const l = j.labellist
 
       const result: ReactElement[] = [];
       for (const [index, item] of d.entries()) {
@@ -53,7 +54,7 @@ export default function App() {
 
         result.push(
           <Link href={`/server/?name=${item}`}>
-            <Card key={index} /*extra={<Link href={`/server/?name=${item}`}>More</Link>}*/ title={`Server: ${item}`} style={{
+            <Card key={index} /*extra={<Link href={`/server/?name=${item}`}>More</Link>}*/ title={`Server: ${l[index]}`} style={{
               width: 300,
               boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)"
             }}>

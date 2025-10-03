@@ -7,6 +7,7 @@ const { Title } = Typography;
 
 import { ReactElement } from 'react';
 export default function App() {
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
   const [dataaa,setDataaa] = useState(null);
   const n = useSearchParams().get("name");
   const [loading, setLoading] = useState<boolean>(true);
@@ -16,10 +17,11 @@ export default function App() {
       console.log("111");
     }
     console.log(n);
-    const res = await fetch(`http://127.0.0.1:18650/api/servers/${n}`)
+    const res = await fetch(`${API_BASE}/servers/${n}`)
     //console.log(res.json())
     const j = await res.json();
     const d = j.data;
+    const l = j.label;
     const columns = [
       {
         title: "Time",
@@ -41,7 +43,7 @@ export default function App() {
       return (
         <>
           <Title>
-            当前服务器: {n}
+            当前服务器: {l}
           </Title>
           <Table dataSource={d} columns={columns} rowKey={(record) => record.timestamp}/>
         </>
