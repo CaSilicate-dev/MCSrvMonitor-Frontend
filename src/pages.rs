@@ -29,7 +29,7 @@ pub struct ServerProps {
 }
 #[function_component(Home)]
 pub fn home() -> Html {
-    let r = use_state(|| html! { <div>{"Loading"}</div>});
+    let r = use_state(|| html! { <div>{"Fetching server list"}</div>});
 
     /*{
         let r_c1 = r.clone();
@@ -55,6 +55,7 @@ pub fn home() -> Html {
                 let data = resp.text().await.unwrap();
                 let json: ListResp = serde_json::from_str(&data).unwrap();
                 let nl = json.namelist;
+                r.set(html!{ <div>{ "Fetching status data" }</div>});
                 /*let mut sl: Vec<SingleServerResp> = Vec::new();
                 for i in nl.iter() {
                     let sresp = reqwasm::http::Request::get(&format!(
