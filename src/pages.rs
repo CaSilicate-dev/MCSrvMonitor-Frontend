@@ -1,4 +1,3 @@
-use std::future;
 
 use reqwasm;
 use serde::Deserialize;
@@ -89,7 +88,7 @@ pub fn home() -> Html {
                     cfutures.push(sreqw);
                 }
                 let all_servers: Vec<SingleServerResp> = futures::future::join_all(cfutures).await;
-                
+
                 r.set(html!{
                     <div class="d-flex flex-wrap">
                         {
@@ -104,6 +103,14 @@ pub fn home() -> Html {
                                                 <p>{ /*format!("Current latency: {}", sl[i].data[0].latency)*/
                                                     (|| {
                                                         let clatency = all_servers[i].data[0].latency;
+                                                        if clatency == -1 {
+                                                            return html!{
+                                                                <>
+                                                                    <span>{ "Current latency: " }</span>
+                                                                    <span style={ format!("color: #{}","ff0000") }>{ clatency }</span>
+                                                                </>
+                                                            }
+                                                        }
                                                         let cpercentage = (clatency) as f64 / 1000_f64;
                                                         let color = utils::percent_color((144, 238, 144), (255, 0, 0), cpercentage);
                                                         return html!{
