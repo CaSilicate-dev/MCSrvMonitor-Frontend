@@ -1,0 +1,14 @@
+[package]
+name = "MCSrvMonitor-Frontend"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+reqwasm = "0.5.0"
+reqwest = { version = "0.12.23", features = [ "json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.145"
+wasm-bindgen-futures = "0.4.54"
+web-sys = "0.3.81"
+yew = { version = "0.21.0", features = ["csr"] }
+yew-router = "0.18.0"
