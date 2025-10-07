@@ -1,9 +1,14 @@
+use serde::Deserialize;
 use yew::prelude::*;
 use yew_router::prelude::*;
-
 mod pages;
 mod utils;
 use pages::*;
+
+#[derive(Deserialize, Clone, PartialEq, Default)]
+pub struct AppConfig {
+    pub api_base: String,
+}
 
 #[derive(Routable, PartialEq, Clone, Debug)]
 pub enum Route {
@@ -14,7 +19,7 @@ pub enum Route {
 }
 fn switch(route: Route) -> Html {
     match route {
-        Route::Home => html! { <Home /> },
+        Route::Home => html! { <Home/> },
         Route::Server { n } => html! { <Server n={n}/> },
     }
 }
@@ -25,7 +30,7 @@ fn app() -> Html {
         <BrowserRouter>
 
             <main class="p-4">
-                <Switch<Route> render={switch} />
+                <Switch<Route> render={move |route| switch(route)} />
             </main>
         </BrowserRouter>
     }

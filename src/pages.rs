@@ -24,7 +24,7 @@ struct SingleServerData {
 }
 
 #[derive(Properties, PartialEq, Clone)]
-pub struct Props {
+pub struct ServerProps {
     pub n: String,
 }
 #[function_component(Home)]
@@ -41,14 +41,18 @@ pub fn home() -> Html {
         },)
 
     }*/
+
     {
         let r = r.clone();
         use_effect_with((), move |_| {
             spawn_local(async move {
-                let resp = reqwasm::http::Request::get("http://127.0.0.1:18650/api/list")
+                let api_base = utils::get_api_base().await;
+
+                let resp = reqwasm::http::Request::get(&format!("{}/list", api_base))
                     .send()
                     .await
                     .unwrap();
+                //console::log_1(&format!("{}/list",props_ab).into());
                 let data = resp.text().await.unwrap();
                 let json: ListResp = serde_json::from_str(&data).unwrap();
                 let nl = json.namelist;
@@ -113,21 +117,19 @@ pub fn home() -> Html {
     }
 }
 #[function_component(Server)]
-pub fn server(props: &Props) -> Html {
-    let name = props.n.clone();
+pub fn server(props: &ServerProps) -> Html {
+    let props = props.clone();
     let r = use_state(|| html! { <div>{"Loading"}</div>});
     {
         let r = r.clone();
-        let name = name.clone();
         use_effect_with((), move |_| {
             spawn_local(async move {
-                let resp = reqwasm::http::Request::get(&format!(
-                    "http://127.0.0.1:18650/api/servers/{}",
-                    name
-                ))
-                .send()
-                .await
-                .unwrap();
+                let api_base = utils::get_api_base().await;
+                let resp =
+                    reqwasm::http::Request::get(&format!("{}/servers/{}", api_base, props.n))
+                        .send()
+                        .await
+                        .unwrap();
                 let data = resp.text().await.unwrap();
                 let json: SingleServerResp = serde_json::from_str(&data).unwrap();
                 let data = json.data;

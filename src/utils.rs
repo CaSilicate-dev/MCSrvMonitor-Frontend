@@ -1,3 +1,5 @@
+use serde::Deserialize;
+
 pub fn percent_color(
     (r1, g1, b1): (u8, u8, u8),
     (r2, g2, b2): (u8, u8, u8),
@@ -15,4 +17,23 @@ pub fn percent_color(
         g.round() as u8,
         b.round() as u8
     )
+}
+
+pub async fn get_api_base() -> String {
+    #[derive(Deserialize, Clone, PartialEq, Default)]
+    pub struct AppConfig {
+        pub api_base: String,
+    }
+    let resp = reqwasm::http::Request::get(
+        "https://fileserver.casilicate.org/mcsrvmon_frontend/config.json",
+    )
+    .send()
+    .await
+    .unwrap()
+    .text()
+    .await
+    .unwrap();
+    let data: AppConfig = serde_json::from_str(&resp).unwrap();
+
+    return data.api_base;
 }
