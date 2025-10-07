@@ -98,7 +98,6 @@ pub fn home() -> Html {
                                 }
                             })
                         }
-                        <div>{"CI/CD Test"}</div>
                     </div>
                 });
             });
