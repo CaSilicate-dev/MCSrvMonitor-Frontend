@@ -1,3 +1,5 @@
+use std::future;
+
 use reqwasm;
 use serde::Deserialize;
 use serde_json;
@@ -54,7 +56,7 @@ pub fn home() -> Html {
                 let data = resp.text().await.unwrap();
                 let json: ListResp = serde_json::from_str(&data).unwrap();
                 let nl = json.namelist;
-                let mut sl: Vec<SingleServerResp> = Vec::new();
+                /*let mut sl: Vec<SingleServerResp> = Vec::new();
                 for i in nl.iter() {
                     let sresp = reqwasm::http::Request::get(&format!(
                         "{}/serverod/{}",
@@ -67,21 +69,41 @@ pub fn home() -> Html {
                     let sdata = sresp.text().await.unwrap();
                     let sjson: SingleServerResp = serde_json::from_str(&sdata).unwrap();
                     sl.push(sjson);
+                }*/
+                let mut cfutures = Vec::new();
+                for i in nl.iter() {
+                    let id = (*i).clone();
+                    let api_base = api_base.clone();
+                    let sreqw = async move {
+                        serde_json::from_str::<SingleServerResp>(
+                            &reqwasm::http::Request::get(&format!("{}/serverod/{}", api_base, id))
+                                .send()
+                                .await
+                                .unwrap()
+                                .text()
+                                .await
+                                .unwrap(),
+                        )
+                        .unwrap()
+                    };
+                    cfutures.push(sreqw);
                 }
+                let all_servers: Vec<SingleServerResp> = futures::future::join_all(cfutures).await;
+                
                 r.set(html!{
                     <div class="d-flex flex-wrap">
                         {
-                            for (0..nl.len()).map(|i| {
+                            for (0..all_servers.len()).map(|i| {
                                 html!{
                                     <a href={ format!("server/{}",&nl[i])} class="text-decoration-none">
                                         <div class="card m-2" style="width: 18rem;">
                                             //<div class="card-body"><a href={ format!("server/{}",&nl[i])} class="btn btn-primary">{&nl[i]} {" : "} {&ll[i]}</a></div>
                                             <div class="card-body">
-                                                <h5>{ format!("Server: {}", sl[i].label) }</h5>
+                                                <h5>{ format!("Server: {}", all_servers[i].label) }</h5>
                                                 <h6>{ format!("Server id: {}", nl[i]) }</h6>
                                                 <p>{ /*format!("Current latency: {}", sl[i].data[0].latency)*/
                                                     (|| {
-                                                        let clatency = sl[i].data[0].latency;
+                                                        let clatency = all_servers[i].data[0].latency;
                                                         let cpercentage = (clatency) as f64 / 1000_f64;
                                                         let color = utils::percent_color((144, 238, 144), (255, 0, 0), cpercentage);
                                                         return html!{
