@@ -9,5 +9,10 @@ pub fn percent_color(
     let g = g1 as f64 + (g2 as f64 - g1 as f64) * p;
     let b = b1 as f64 + (b2 as f64 - b1 as f64) * p;
 
-    format!("{:02x}{:02x}{:02x}", r.round() as u8, g.round() as u8, b.round() as u8)
+    format!(
+        "{:02x}{:02x}{:02x}",
+        r.round() as u8,
+        g.round() as u8,
+        b.round() as u8
+    )
 }

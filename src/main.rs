@@ -1,7 +1,6 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-
 mod pages;
 mod utils;
 use pages::*;
@@ -16,14 +15,12 @@ pub enum Route {
 fn switch(route: Route) -> Html {
     match route {
         Route::Home => html! { <Home /> },
-        Route::Server {n} => html! { <Server n={n}/> },
+        Route::Server { n } => html! { <Server n={n}/> },
     }
 }
 
-
 #[function_component(App)]
 fn app() -> Html {
-
     html! {
         <BrowserRouter>
 

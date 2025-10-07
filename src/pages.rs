@@ -1,9 +1,9 @@
-use yew::prelude::*;
-use web_sys::console;
-use wasm_bindgen_futures::spawn_local;
 use reqwasm;
 use serde::Deserialize;
 use serde_json;
+use wasm_bindgen_futures::spawn_local;
+use web_sys::console;
+use yew::prelude::*;
 
 use crate::utils;
 #[derive(Deserialize, Debug, Clone)]
@@ -22,7 +22,6 @@ struct SingleServerData {
     player: i32,
     playerlist: String,
 }
-
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct Props {
@@ -46,17 +45,26 @@ pub fn home() -> Html {
         let r = r.clone();
         use_effect_with((), move |_| {
             spawn_local(async move {
-                let resp = reqwasm::http::Request::get("http://127.0.0.1:18650/api/list").send().await.unwrap();
+                let resp = reqwasm::http::Request::get("http://127.0.0.1:18650/api/list")
+                    .send()
+                    .await
+                    .unwrap();
                 let data = resp.text().await.unwrap();
                 let json: ListResp = serde_json::from_str(&data).unwrap();
                 let nl = json.namelist;
                 let mut sl: Vec<SingleServerResp> = Vec::new();
                 for i in nl.iter() {
-                    let sresp = reqwasm::http::Request::get(&format!("http://127.0.0.1:18650/api/serverod/{}",*i)).send().await.unwrap();
+                    let sresp = reqwasm::http::Request::get(&format!(
+                        "http://127.0.0.1:18650/api/serverod/{}",
+                        *i
+                    ))
+                    .send()
+                    .await
+                    .unwrap();
                     console::log_1(&format!("The answer is {}", *i).into());
                     let sdata = sresp.text().await.unwrap();
                     console::log_1(&format!("The answer is {}", sdata).into());
-                    let sjson:SingleServerResp = serde_json::from_str(&sdata).unwrap();
+                    let sjson: SingleServerResp = serde_json::from_str(&sdata).unwrap();
                     sl.push(sjson);
                 }
                 r.set(html!{
@@ -95,7 +103,7 @@ pub fn home() -> Html {
             || ()
         });
     }
-    
+
     html! {
         <div>
             <h1 class="text-2xl font-bold text-center">{"CaSilicate's Minecraft Server Monitor"}</h1>
@@ -113,12 +121,18 @@ pub fn server(props: &Props) -> Html {
         let name = name.clone();
         use_effect_with((), move |_| {
             spawn_local(async move {
-                let resp = reqwasm::http::Request::get(&format!("http://127.0.0.1:18650/api/servers/{}",name)).send().await.unwrap();
+                let resp = reqwasm::http::Request::get(&format!(
+                    "http://127.0.0.1:18650/api/servers/{}",
+                    name
+                ))
+                .send()
+                .await
+                .unwrap();
                 let data = resp.text().await.unwrap();
                 let json: SingleServerResp = serde_json::from_str(&data).unwrap();
                 let data = json.data;
 
-                r.set(html!{
+                r.set(html! {
                     /*<pre style="white-space: pre;">
                         { format!("Current server: {}", label) }
                         {
@@ -161,7 +175,7 @@ pub fn server(props: &Props) -> Html {
             || ()
         });
     }
-    html!{
+    html! {
         <div>
             { (*r).clone() }
         </div>
