@@ -2,7 +2,6 @@ use reqwasm;
 use serde::Deserialize;
 use serde_json;
 use wasm_bindgen_futures::spawn_local;
-use web_sys::console;
 use yew::prelude::*;
 
 use crate::utils;
@@ -52,7 +51,6 @@ pub fn home() -> Html {
                     .send()
                     .await
                     .unwrap();
-                //console::log_1(&format!("{}/list",props_ab).into());
                 let data = resp.text().await.unwrap();
                 let json: ListResp = serde_json::from_str(&data).unwrap();
                 let nl = json.namelist;
@@ -65,9 +63,7 @@ pub fn home() -> Html {
                     .send()
                     .await
                     .unwrap();
-                    console::log_1(&format!("The answer is {}", *i).into());
                     let sdata = sresp.text().await.unwrap();
-                    console::log_1(&format!("The answer is {}", sdata).into());
                     let sjson: SingleServerResp = serde_json::from_str(&sdata).unwrap();
                     sl.push(sjson);
                 }
