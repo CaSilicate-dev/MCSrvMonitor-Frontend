@@ -57,7 +57,8 @@ pub fn home() -> Html {
                 let mut sl: Vec<SingleServerResp> = Vec::new();
                 for i in nl.iter() {
                     let sresp = reqwasm::http::Request::get(&format!(
-                        "http://127.0.0.1:18650/api/serverod/{}",
+                        "{}/serverod/{}",
+                        api_base,
                         *i
                     ))
                     .send()
