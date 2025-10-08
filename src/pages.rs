@@ -19,6 +19,8 @@ struct SingleServerResp {
 #[derive(Deserialize, Debug, Clone)]
 struct SingleServerData {
     timestamp: String,
+    #[serde(rename = "type")]
+    stype: i8,
     latency: i32,
     player: i32,
     playerlist: String,
@@ -102,7 +104,19 @@ pub fn home() -> Html {
                                                     //<div class="card-body"><a href={ format!("server/{}",&nl[i])} class="btn btn-primary">{&nl[i]} {" : "} {&ll[i]}</a></div>
                                                     <div class="card-body">
                                                         <h5>{ format!("Server: {}", all_servers[i].label) }</h5>
-                                                        <h6>{ format!("Server id: {}", nl[i]) }</h6>
+                                                        <h6>{ 
+                                                            (|| {
+                                                                let server_type = all_servers[i].data[0].stype;
+                                                                if server_type == 1 {
+                                                                    return "Server version: Java";
+                                                                } else if server_type == 0 {
+                                                                    return "Server version: Bedrock";
+                                                                } else {
+                                                                    return "Server version: Unknown"
+                                                                }
+                                                            })()
+                                                        }</h6>
+
                                                         <p>{ /*format!("Current latency: {}", sl[i].data[0].latency)*/
                                                             (|| {
                                                                 let clatency = all_servers[i].data[0].latency;
